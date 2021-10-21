@@ -3,6 +3,21 @@ reads data
 """
 
 import os.path
+import netcdf4 as nc4
+
+
+def datareader_nc(filename):
+
+    nc = nc4.Dataset(os.path.join("measurements", filename), "r")
+
+    # print variable names (see Argo manual for reference of your variables)
+    print(nc.variables.keys())
+
+    # load a variable
+    #variable1 = nc.variables["variable_name"][:]
+
+    #   close file again
+    nc.close()
 
 
 def datareader_profile(datanumber):
