@@ -23,8 +23,16 @@ def main():
     eta_T = calculator.eta(T_time/grad)
     eta_p = calculator.eta(p_time)
     plot.plot_timeseries(time, eta_T, eta_p, dataname)
-    spectrum, f, df = fft_basics_for_henri.fft(np.add(eta_T, eta_p), len(eta_T)-2, time[-1]/len(time))
-    fft_basics_for_henri.fft_tapered(len(eta_T), f, np.add(eta_T, eta_p), df, spectrum)
+    dt = time[-1]/len(time)
+    fft_basics_for_henri.fft(np.add(eta_T, eta_p), len(eta_T)-2, dt, "fft_eta")
+    print("len: ", len(eta_T))
+#    for j in range(0, int((len(eta_T)-128)/10+1)):
+#        print("von ", 10*j, " bis ", 128+10*j)
+#        fft_basics_for_henri.fft_tapered(128, np.add(eta_T, eta_p)[10*j:128+10*j], dt, "tapered_fft_eta_{number}".format(number=j),True)
+#    print("all datapoints")
+    fft_basics_for_henri.fft_tapered(len(eta_T), np.add(eta_T, eta_p), dt, "tapered_fft_eta", 1)
+    eta_flatened = calculator.eta_flatened(eta_T, eta_p)
+    fft_basics_for_henri.fft_tapered(128, eta_flatened, dt, "tapered_fft_eta", 2)
 
 
 if __name__ == "__main__":

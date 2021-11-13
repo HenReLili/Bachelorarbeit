@@ -3,21 +3,33 @@ reads data
 """
 
 import os.path
-import netcdf4 as nc4
+import netCDF4 as nc4
+import pandas as pd
 
 
-def datareader_nc(filename):
+def overviewreader(latmin=-71, latmax=11, lonmin=176, lonmax=-116):
+    file = pd.read_csv("measurements/data/overview.csv")
+    print("lonmin: ", lonmin)
+    if lonmin < 0 or lonmax > 0:
+        queried = file.query('{a} < LON0 < {b} and {c} < LAT0 < {d}'.format(a=lonmin, b=lonmax, c=latmin, d=latmax))
+    else:
+        queried = file.query('{a} < LON0 or {b} > LON0'.format(a=lonmin, b=lonmax))
+        queried = queried.query('{c} < LAT0 < {d}'.format(c=latmin, d=latmax))
+    return queried["ID"]
 
+
+def datareader_nc(filename, varname):
     nc = nc4.Dataset(os.path.join("measurements", filename), "r")
 
     # print variable names (see Argo manual for reference of your variables)
-    print(nc.variables.keys())
+    # print(nc.variables.keys())
 
     # load a variable
-    #variable1 = nc.variables["variable_name"][:]
+    variable = nc.variables[varname][:]
 
     #   close file again
     nc.close()
+    return variable, nc.variables.keys()
 
 
 def datareader_profile(datanumber):

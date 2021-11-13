@@ -7,6 +7,7 @@ Created on Sun Oct 17 13:20:20 2021
 
 import numpy as np
 import matplotlib.pyplot as plt
+import os.path
 
 
 def fake_signal():
@@ -27,7 +28,7 @@ def fake_signal():
     return signal, n, dt, t
 
 
-def fft(signal, n, dt):
+def fft(signal, n, dt, dataname):
     # calculate rfft (real fast fourier transform)
     fft_coeffs = np.fft.rfft(signal)    # fourier coefficients
     df = 1 / n / dt                   # sampling frequency
@@ -44,9 +45,10 @@ def fft(signal, n, dt):
     plt.loglog(f, spectrum)
     plt.xlabel("frequency f [s$^{-1}$]")
     plt.ylabel("PSD")
+    plt.savefig(os.path.join("plots", dataname))
+    plt.show()
     # plt.axvline(80, c="grey")
     # plt.axvline(50, c="grey")
-    return spectrum, f, df
 
 
 ########### THE REST DOWN BELOW IS NOT IMPORTANT IN THE BEGINNING ###########
@@ -78,8 +80,17 @@ def small_subplot(n, t, signal):
     plt.plot(t, signal*sin2_taper(n, 0.1))  # <- see how it looks like a package now! ;-)
 
 
-def fft_tapered(n, f, signal, df, spectrum):
+def fft_tapered(n, signal, dt, dataname, plot_number):
     # now calculate a new spectrum with the tapered signal
+
+    df = 1 / n / dt                   # sampling frequency
+    # calculate new x-axis (frequency space)
+    if n % 2:
+        even = 0
+    else:
+        even = 1
+    f = df*np.arange(n/2 + even)
+
 
     # you have to correct the spectrum for the use of the window function like this
     correction_factor = 1/n * np.sum(sin2_taper(n, 0.1)**2)
@@ -91,10 +102,14 @@ def fft_tapered(n, f, signal, df, spectrum):
     # the factor of 2 comes from the symmetry of the Fourier coeffs
     spectrum_win = 2.*(fft_coeffs_win*fft_coeffs_win.conj()).real / df / n**2  # <- this is your spectrum!
 
+    # calculates the inertial frequency
+    #f_inert = 2 * 7.2921 * 10 ** (-5) * np.sin(latitude)
+
     # now plot the new spectrum
-    plt.figure(4)
+    plt.figure(plot_number)
     plt.ylim(min(spectrum_win[1:])/10, max(spectrum_win)*10)
-    plt.loglog(f, spectrum_win, label = "tapered")
+    plt.loglog(f, spectrum_win, label="tapered")
+    plt.savefig(os.path.join("plots", dataname))
     #plt.loglog(f, spectrum, label = "original")
 
     plt.legend()
