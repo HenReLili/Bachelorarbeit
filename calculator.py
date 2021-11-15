@@ -11,10 +11,13 @@ def grad(depth, T):
     for i in range(0, len(T)-1):
         dT = T[i+1] - T[i]
         dh = depth[i+1] - depth[i]
+        #print("dh: ", dh)
         grad = dT / dh
         grads.append(grad)
 
+    #print(grads)
     grads_mean = np.mean(grads)
+    #print(grads_mean)
     return grads_mean
 
 

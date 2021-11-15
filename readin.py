@@ -8,8 +8,10 @@ import pandas as pd
 
 
 def overviewreader(latmin=-71, latmax=11, lonmin=176, lonmax=-116):
+    """
+    latmin: unten; lonmin: links
+    """
     file = pd.read_csv("measurements/data/overview.csv")
-    print("lonmin: ", lonmin)
     if lonmin < 0 or lonmax > 0:
         queried = file.query('{a} < LON0 < {b} and {c} < LAT0 < {d}'.format(a=lonmin, b=lonmax, c=latmin, d=latmax))
     else:
@@ -19,7 +21,7 @@ def overviewreader(latmin=-71, latmax=11, lonmin=176, lonmax=-116):
 
 
 def datareader_nc(filename, varname):
-    nc = nc4.Dataset(os.path.join("measurements", filename), "r")
+    nc = nc4.Dataset(os.path.join("measurements/data/floats", filename), "r")
 
     # print variable names (see Argo manual for reference of your variables)
     # print(nc.variables.keys())
@@ -29,7 +31,7 @@ def datareader_nc(filename, varname):
 
     #   close file again
     nc.close()
-    return variable, nc.variables.keys()
+    return variable[0], nc.variables.keys()
 
 
 def datareader_profile(datanumber):
